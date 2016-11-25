@@ -10,3 +10,9 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown,
+    edgeR,
+    ggplot2,
+    pdfCluster
+VignetteBuilder: knitr

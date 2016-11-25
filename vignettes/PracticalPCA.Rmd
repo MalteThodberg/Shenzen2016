@@ -1,0 +1,384 @@
+--- 
+title: "Practical PCA" 
+author: "Malte Thodberg" 
+date: "`r Sys.Date()`" 
+output: 
+  ioslides_presentation: 
+     highlight: tango 
+     smaller: yes 
+footer: Shenzen 2016 
+fontsize: 9pt 
+vignette: > 
+  %\VignetteIndexEntry{Practical PCA} 
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8} 
+---
+
+## Teachers and slides
+
+- __Malte Thodberg__ 
+- PhD Student ~ 1 year 
+- Focus: Clinical Bioinformatics 
+- Mail: `malte.thodberg@bio.ku.dk` 
+- Background: BSc Molecular Biomedicine & MSc Bioinformatics
+
+## Practical Outline
+
+The plan:
+
+- Brief mention of data dimensionality. 
+- Brief example of PCA using small example datasets. 
+- Normalizing expression using edgeR's `cpm` function. 
+- Exploring RNA-Seq data with PCA.
+
+## Datasets
+
+Example datasets:
+
+- `iris` dataset from `datasets` (default R-package). 
+- `oliveoil` dataset from the `pdfCluster` package.
+
+Real datasets:
+
+- `zebrafish` dataset 
+- `fission` dataset 
+- `pasilla` dataset
+
+Advanced dataset for playing around:
+
+- `tissues` dataset
+
+## Plotting libraries
+
+The plot examples will mainly be based on the popular `ggplot2` package, since
+`ggplot2` have powerful features for coloring plots:
+
+```{r}
+library(ggplot2) 
+```
+
+
+But feel free to use whatever package you like, i.e. `base`, `lattice`, etc.
+
+## The `iris` dataset
+
+Let's first look at the iris dataset:
+
+```{r} 
+# Load the data 
+data(iris)
+
+# Size of the dataframe 
+dim(iris)
+
+# First few lines of the dataset 
+head(iris) 
+```
+
+## The `iris` dataset
+
+```{r} 
+# Summary statistics 
+summary(iris) 
+```
+
+The `iris` data is __4D__ - we will use PCA to generate a __2D__ representation
+of the data.
+
+We also have a some grouping of the data - the `Species` column.
+
+## Performing the PCA
+
+Let's try out PCA on the `iris` dataset! As with everything in R, this is a
+one-liner:
+
+```{r} 
+pca_iris <- prcomp(iris[,-5]) 
+```
+
+That was easy! Let's look what's inside: 
+
+```{r} 
+summary(pca_iris) 
+```
+
+Since the data is __4D__ we get __4__ PCs. The first PC captures almost __92%__
+of the variation in the dataset, while the second PC captures __5%__. Using just
+these two PCs, we can make a plot containing __97%__ of the variation in the
+dataset! The positions of each observation along each PC (The position on the
+"picture") is stored in `pca_iris$x` as a matrix object.
+
+## Extracting the PCs
+
+When plotting, it is usually a good idea to put all the data you want plot in a
+single `data.frame`, especially if you are using `ggplot2`:
+
+```{r} 
+plot_iris <- data.frame(pca_iris$x, Species=iris$Species) 
+head(plot_iris)
+```
+
+## Plotting the PCA in 2D
+
+```{r fig.width=7.5, fig.height=4.5} 
+ggplot(plot_iris, aes(x=PC1, y=PC2, color=Species)) + geom_point() 
+```
+
+## Plotting the PCA in 2D
+
+```{r fig.width=7.5, fig.height=4.5} 
+ggplot(plot_iris, aes(x=PC3, y=PC4, color=Species)) + geom_point() 
+```
+
+## Base plotting of the same thing 
+
+```{r fig.width=7.5, fig.height=4.5} 
+with(plot_iris, plot(x=PC1, y=PC2, col=Species)); grid() 
+```
+
+## Exercise 1: The `oliveoil` dataset
+
+Repeat the previous analysis for the the `oliveoil` dataset from the
+`pdfCluster` package!
+
+1. Load the data, and determine the dimensionality. 
+2. Perform the PCA 
+3. Inspect the amount of variance explained by each PC 
+4. Make a plot of the samples using `PC1` & `PC2` and `PC2` & `PC3` 
+5. Do you see any pattern? Discuss with the people near you.
+
+## Exercise 1: Loading the data
+
+```{r} 
+# Load the data 
+library(pdfCluster) 
+data(oliveoil)
+
+# Size of the dataframe 
+dim(oliveoil)
+
+# First few lines of the dataset 
+head(oliveoil) 
+```
+
+## Exercise 1: Loading the data
+
+```{r} 
+# Summary statistics 
+summary(oliveoil) 
+```
+
+## Exercise 1: Performing the PCA
+
+```{r} 
+pca_oil <- prcomp(oliveoil[,-c(1,2)]) 
+summary(pca_oil) 
+```
+
+## Extracting the PCs
+
+```{r} 
+plot_oil <- data.frame(pca_oil$x, oliveoil[,1:2]) 
+head(plot_oil) 
+```
+
+## Plotting the PCA in 2D
+
+```{r fig.width=7.5, fig.height=4.5} 
+ggplot(plot_oil, aes(x=PC1, y=PC2, color=region, shape=macro.area)) + geom_point() + coord_fixed() 
+```
+
+## Plotting the PCA in 2D
+
+```{r fig.width=7.5, fig.height=4.5} 
+ggplot(plot_oil, aes(x=PC3, y=PC4, color=region, shape=macro.area)) + geom_point() + coord_fixed() 
+```
+
+## Wrapping up
+
+PCA is one of the most widely used methods for dimensionality reduction.
+
+We have skipped over some very important concepts in the this very shorts
+introduction:
+
+- The relation between PCA and Singular Value Decomposition (SVD): how the PCA is actually calculated. 
+- Loading of features: How "important" features are for the different PCs 
+- Scaling of the data: How to combine measurements on different scales (Play around with this using the `prcomp(scale=TRUE)` argument).
+
+Other popular methods not covered here:
+
+- Multidimensional scaling (MDS) 
+- t-distributed Stochastic Neighbor Embedding (t-SNE) 
+- Clustered heatmaps (see package `pheatmap`)
+
+## The `zebrafish` dataset
+
+Next is a worked example on a real RNA-Seq dataset:
+
+- Dataset from the paper: _Silencing of odorant receptor genes by G protein βγ signaling ensures the expression of one odorant receptor per olfactory sensory neuron_ by Ferreira _et al_. 
+- URL to paper: https://www.ncbi.nlm.nih.gov/pubmed/24559675
+- RNA-Seq data for __6__ Zebrafish samples. 
+- Samples grouped by Gallein treated (Trt) or untreated controls (Ctl)
+- The data contains raw counts for both genes and so-called experimental spike-ins (which we won't use)
+
+```{r} 
+library(Shenzen2016)
+data("zebrafish")
+```
+
+## Trimming the data
+
+As explained earlier, we need to trim and normalize the data.
+
+Let's first discard genes with less than 5 reads in in three samples
+
+```{r} 
+above_threshold <- rowSums(zebrafish$Expression >= 5) >= 3
+EM_zebra <- subset(zebrafish$Expression, above_threshold)
+```
+
+The threshold on which to trim is somewhat arbitrary and depends heavily on the given dataset. Often you would set the threshold for expression on what can be externally experimentally validated.
+
+## Normalizing the data
+
+We then use `edgeR` to normalize the data. First we have to store the data as a `DGEList`
+
+```{r} 
+library(edgeR)
+
+# Create dge list object
+dge_zebra <- DGEList(EM_zebra)
+
+# Calculate normalization factors
+dge_zebra <- calcNormFactors(dge_zebra, method="TMM")
+
+# Normalize the expression values
+logTMM_zebra <- cpm(dge_zebra, log=TRUE, prior.count=3)
+```
+
+## Performing the PCA
+
+We perform the PCA just as before. We have to transpose the EM first, since genomic data is usually stored with samples as columns rather than rows:
+
+```{r} 
+pca_zebra <- prcomp(t(logTMM_zebra))
+summary(pca_zebra)
+```
+
+## Extracting the PCs
+
+```{r} 
+plot_zebra <- data.frame(pca_zebra$x, zebrafish$Design) 
+head(plot_oil) 
+```
+
+## Plotting the PCA in 2D
+
+```{r fig.width=7.5, fig.height=4.5} 
+ggplot(plot_zebra, aes(x=PC1, y=PC2, color=gallein)) + geom_point() + coord_fixed() 
+```
+
+## Plotting the PCA in 2D
+
+```{r fig.width=7.5, fig.height=4.5} 
+ggplot(plot_zebra, aes(x=PC3, y=PC4, color=gallein)) + geom_point() + coord_fixed()
+```
+
+## Interpreting the plot
+
+
+## Exercise 2: The `yeast` dataset
+
+Perfrom the PCA:
+```{r}
+# Load the data
+data("yeast")
+
+# Trim 
+EM_yeast <- subset(yeast$Expression, rowSums(yeast$Expression >= 5) >= 3)
+
+# Calculate normalization factors
+dge_yeast <- calcNormFactors(DGEList(EM_yeast), method="TMM")
+
+# Normalize the expression values
+logTMM_yeast <- cpm(dge_yeast, log=TRUE, prior.count=3)
+
+# PCA
+pca_yeast <- prcomp(t(logTMM_yeast))
+plot_yeast <- data.frame(pca_yeast$x, yeast$Design) 
+```
+
+### Plot
+
+```{r fig.width=7.5, fig.height=4.5} 
+ggplot(plot_yeast, aes(x=PC1, y=PC3, color=minute, shape=strain)) + geom_point() + coord_fixed() 
+```
+
+## Exercise 3: The `pasilla` dataset
+
+Perfrom the PCA:
+```{r}
+# Load the data
+data("pasilla")
+
+# Trim 
+EM_pasilla <- subset(pasilla$Expression, rowSums(pasilla$Expression >= 5) >= 3)
+
+# Calculate normalization factors
+dge_pasilla <- calcNormFactors(DGEList(EM_pasilla), method="TMM")
+
+# Normalize the expression values
+logTMM_pasilla <- cpm(dge_pasilla, log=TRUE, prior.count=3)
+
+# PCA
+pca_pasilla <- prcomp(t(logTMM_pasilla))
+plot_pasilla <- data.frame(pca_pasilla$x, pasilla$Design) 
+```
+
+### Plot
+
+```{r fig.width=7.5, fig.height=4.5} 
+ggplot(plot_pasilla, aes(x=PC1, y=PC2, color=condition, shape=type)) + geom_point() + coord_fixed() 
+```
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block
+above. These are required in order to instruct R how to build the vignette. Note
+that you should change the `title` field and the `\VignetteIndexEntry` to match
+the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme
+you can specify your own CSS in the document metadata as follows:
+
+output: rmarkdown::html_vignette: css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images
+side-by-side.
+
+```{r, fig.show='hold'} plot(1:10) plot(10:1) ```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+output: rmarkdown::html_vignette: fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in
+**knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A
+footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'} knitr::kable(head(mtcars, 10)) ```
+
+## More Examples
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither." 
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
