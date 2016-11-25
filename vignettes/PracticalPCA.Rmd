@@ -305,7 +305,9 @@ logTMM_yeast <- cpm(dge_yeast, log=TRUE, prior.count=3)
 
 # PCA
 pca_yeast <- prcomp(t(logTMM_yeast))
+### <b>
 plot_yeast <- data.frame(pca_yeast$x, yeast$Design) 
+### </b>
 ```
 
 ### Plot

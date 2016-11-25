@@ -63,6 +63,7 @@ Remember, this is how the design matrix for the `zebrafish` dataset looks:
 dummy <- data.frame(factor1=c("A", "A", "B", "B", "A", "A", "B", "B"),
 										 factor2=c("C", "C", "C", "C", "D", "D", "D", "D"))
 
+dummy
 ```
 
 ## Basic model

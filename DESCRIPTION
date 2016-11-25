@@ -10,8 +10,13 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 5.0.1
+Depends: R (>= 3.3.1)
 Suggests: knitr,
     rmarkdown,
+    MASS,
+    statmod,
+    splines,
+    KernSmooth,
     edgeR,
     ggplot2,
     pdfCluster
