@@ -5,6 +5,8 @@
 # 	* Add data creation scripts in data-raw
 # * Use devtools::use_data() to add data to package
 
+library(forcats)
+
 ### Pasilla
 library(DESeq2)
 library(pasilla)
@@ -50,7 +52,7 @@ fGR <- as.data.frame(rowRanges(small))
 fDM <- as.data.frame(colData(small))
 fDM$minute <- fct_drop(fDM$minute)
 
-yeast <- list(Expression=fEM, design=fDM, Annotation=fGR)
+yeast <- list(Expression=fEM, Design=fDM, Annotation=fGR)
 devtools::use_data(yeast, overwrite=TRUE)
 
 ### Zebrafish
