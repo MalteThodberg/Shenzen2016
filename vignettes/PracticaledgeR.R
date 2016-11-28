@@ -2,6 +2,7 @@
 dummy <- data.frame(factor1=c("A", "A", "B", "B", "A", "A", "B", "B"),
 										 factor2=c("C", "C", "C", "C", "D", "D", "D", "D"))
 
+dummy
 
 ## ------------------------------------------------------------------------
 model.matrix(~factor1, data=dummy)
@@ -73,4 +74,51 @@ summary(decideTestsDGE(galleinQL, p.value=0.1))
 
 ## ------------------------------------------------------------------------
 plotQLDisp(fitQL)
+
+## ------------------------------------------------------------------------
+# Load the data
+data("yeast")
+data("pasilla")
+
+# Set a datasets
+dataset <- pasilla
+
+# Experiment with model matrices
+mod <- model.matrix(~condition, data=dataset$Design)
+
+# Look how the experiment is designed
+dataset$Design
+
+## ------------------------------------------------------------------------
+# Trim 
+EM <- subset(dataset$Expression, rowSums(dataset$Expression >= 10) >= 3)
+
+# Calculate normalization factors
+dge <- calcNormFactors(DGEList(EM), method="TMM")
+
+# Calculate dispersion
+disp <- estimateDisp(dge, design=mod, robust=TRUE)
+
+# Fit models
+fit <- glmFit(disp, design=mod)
+
+# Perform the test of the given coefficient
+res <- glmLRT(fit, coef="conditionuntreated")
+
+## ---- eval=FALSE, include=TRUE-------------------------------------------
+#  # Dispersion
+#  plotBCV(disp)
+#  
+#  # topTages
+#  topTags(res)
+#  
+#  # Up and down regulated genes
+#  summary(decideTestsDGE(res))
+#  
+#  # Smear plot
+#  plotSmear(res, de.tags=rownames(res)[decideTestsDGE(res) != 0])
+#  
+#  # Volcano
+#  all_genes <- as.data.frame(topTags(res, n=Inf, sort.by="none"))
+#  ggplot(all_genes, aes(x=logFC, y=-log10(PValue), color=FDR < 0.05)) + geom_point()
 

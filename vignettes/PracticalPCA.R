@@ -26,17 +26,17 @@ plot_iris <- data.frame(pca_iris$x, Species=iris$Species)
 head(plot_iris)
 
 ## ----fig.width=7.5, fig.height=4.5---------------------------------------
-ggplot(plot_iris, aes(x=PC1, y=PC2, color=Species)) + geom_point() 
+ggplot(plot_iris, aes(x=PC1, y=PC2, color=Species)) + geom_point()  + coord_fixed()
 
 ## ----fig.width=7.5, fig.height=4.5---------------------------------------
-ggplot(plot_iris, aes(x=PC3, y=PC4, color=Species)) + geom_point() 
+ggplot(plot_iris, aes(x=PC3, y=PC4, color=Species)) + geom_point() + coord_fixed()
 
 ## ----fig.width=7.5, fig.height=4.5---------------------------------------
 with(plot_iris, plot(x=PC1, y=PC2, col=Species)); grid() 
 
 ## ------------------------------------------------------------------------
 # Load the data 
-library(pdfCluster) 
+suppressPackageStartupMessages(library(pdfCluster))
 data(oliveoil)
 
 # Size of the dataframe 
@@ -50,25 +50,21 @@ head(oliveoil)
 summary(oliveoil) 
 
 ## ------------------------------------------------------------------------
+# PCA without the first two columns
 pca_oil <- prcomp(oliveoil[,-c(1,2)]) 
-summary(pca_oil) 
 
-## ------------------------------------------------------------------------
+# Save the data for plotting
 plot_oil <- data.frame(pca_oil$x, oliveoil[,1:2]) 
-head(plot_oil) 
 
 ## ----fig.width=7.5, fig.height=4.5---------------------------------------
 ggplot(plot_oil, aes(x=PC1, y=PC2, color=region, shape=macro.area)) + geom_point() + coord_fixed() 
-
-## ----fig.width=7.5, fig.height=4.5---------------------------------------
-ggplot(plot_oil, aes(x=PC3, y=PC4, color=region, shape=macro.area)) + geom_point() + coord_fixed() 
 
 ## ------------------------------------------------------------------------
 library(Shenzen2016)
 data("zebrafish")
 
 ## ------------------------------------------------------------------------
-above_threshold <- rowSums(zebrafish$Expression >= 5) >= 3
+above_threshold <- rowSums(zebrafish$Expression >= 10) >= 3
 EM_zebra <- subset(zebrafish$Expression, above_threshold)
 
 ## ------------------------------------------------------------------------
@@ -100,40 +96,33 @@ ggplot(plot_zebra, aes(x=PC3, y=PC4, color=gallein)) + geom_point() + coord_fixe
 ## ------------------------------------------------------------------------
 # Load the data
 data("yeast")
+data("pasilla")
+data("tissues")
 
-# Trim 
-EM_yeast <- subset(yeast$Expression, rowSums(yeast$Expression >= 5) >= 3)
+# Inspect the dimensionality
+dim(yeast$Expression)
 
-# Calculate normalization factors
-dge_yeast <- calcNormFactors(DGEList(EM_yeast), method="TMM")
+# Inspect the design by
+yeast$Design
 
-# Normalize the expression values
-logTMM_yeast <- cpm(dge_yeast, log=TRUE, prior.count=3)
-
-# PCA
-pca_yeast <- prcomp(t(logTMM_yeast))
-plot_yeast <- data.frame(pca_yeast$x, yeast$Design) 
-
-## ----fig.width=7.5, fig.height=4.5---------------------------------------
-ggplot(plot_yeast, aes(x=PC1, y=PC3, color=minute, shape=strain)) + geom_point() + coord_fixed() 
 
 ## ------------------------------------------------------------------------
-# Load the data
-data("pasilla")
+# Set a dataset
+dataset <- tissues
 
-# Trim 
-EM_pasilla <- subset(pasilla$Expression, rowSums(pasilla$Expression >= 5) >= 3)
+# Trim: Play around with numbers here 
+EM <- subset(dataset$Expression, rowSums(dataset$Expression >= 5) >= 3)
 
-# Calculate normalization factors
-dge_pasilla <- calcNormFactors(DGEList(EM_pasilla), method="TMM")
+# Calculate normalization factors: Play around with the method argument
+dge <- calcNormFactors(DGEList(EM), method="TMM")
 
 # Normalize the expression values
-logTMM_pasilla <- cpm(dge_pasilla, log=TRUE, prior.count=3)
+logTMM <- cpm(dge, log=TRUE, prior.count=5)
 
-# PCA
-pca_pasilla <- prcomp(t(logTMM_pasilla))
-plot_pasilla <- data.frame(pca_pasilla$x, pasilla$Design) 
+# Perform the PCA and save data for plotting
+pca <- prcomp(t(logTMM))
+plot_data <- data.frame(pca$x, dataset$Design) 
 
-## ----fig.width=7.5, fig.height=4.5---------------------------------------
-ggplot(plot_pasilla, aes(x=PC1, y=PC2, color=condition, shape=type)) + geom_point() + coord_fixed() 
+## ------------------------------------------------------------------------
+ggplot(plot_data, aes(x=PC1, y=PC2, color=cell.type, label=cell.type)) + geom_point() + coord_fixed() 
 

@@ -118,3 +118,7 @@ simulate_lm <- function(mod, Beta){
 simulate_lm(mod=model.matrix(~Treatment*Condition, data=withint),
 						Beta=c(1,2,3,4)) %>%
 	head
+
+simulate_lm(mod=model.matrix(~Treatment*Condition, data=withint),
+						Beta=c(1,2,3,4)) %>%
+

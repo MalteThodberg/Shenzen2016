@@ -17,7 +17,7 @@ vignette: >
 ## Teachers and slides
 
 - __Malte Thodberg__ 
-- PhD Student ~ 1 year 
+- PhD Student ~ 1.5 / 3 years 
 - Focus: Clinical Bioinformatics 
 - Mail: `malte.thodberg@bio.ku.dk` 
 - Background: BSc Molecular Biomedicine & MSc Bioinformatics
@@ -121,13 +121,13 @@ head(plot_iris)
 ## Plotting the PCA in 2D
 
 ```{r fig.width=7.5, fig.height=4.5} 
-ggplot(plot_iris, aes(x=PC1, y=PC2, color=Species)) + geom_point() 
+ggplot(plot_iris, aes(x=PC1, y=PC2, color=Species)) + geom_point()  + coord_fixed()
 ```
 
 ## Plotting the PCA in 2D
 
 ```{r fig.width=7.5, fig.height=4.5} 
-ggplot(plot_iris, aes(x=PC3, y=PC4, color=Species)) + geom_point() 
+ggplot(plot_iris, aes(x=PC3, y=PC4, color=Species)) + geom_point() + coord_fixed()
 ```
 
 ## Base plotting of the same thing 
@@ -147,11 +147,15 @@ Repeat the previous analysis for the the `oliveoil` dataset from the
 4. Make a plot of the samples using `PC1` & `PC2` and `PC2` & `PC3` 
 5. Do you see any pattern? Discuss with the people near you.
 
-## Exercise 1: Loading the data
+I highly suggest you try writing the code yourself! If you are struggling, you can look at the cheatsheets on the following slides.
+
+We will go around the room to answer questions.
+
+## Cheat sheet: Loading the data
 
 ```{r} 
 # Load the data 
-library(pdfCluster) 
+suppressPackageStartupMessages(library(pdfCluster))
 data(oliveoil)
 
 # Size of the dataframe 
@@ -161,42 +165,36 @@ dim(oliveoil)
 head(oliveoil) 
 ```
 
-## Exercise 1: Loading the data
+## Cheat sheet: Summarising the data
 
 ```{r} 
 # Summary statistics 
 summary(oliveoil) 
 ```
 
-## Exercise 1: Performing the PCA
+## Cheat sheet: Analysing the data
 
-```{r} 
+Example code for performing the PCA:
+```{r}
+# PCA without the first two columns
 pca_oil <- prcomp(oliveoil[,-c(1,2)]) 
-summary(pca_oil) 
-```
 
-## Extracting the PCs
-
-```{r} 
+# Save the data for plotting
 plot_oil <- data.frame(pca_oil$x, oliveoil[,1:2]) 
-head(plot_oil) 
 ```
+
+Go back in the slides: Which object can you call the `summary` function on to inspect the contained variance?
 
 ## Plotting the PCA in 2D
 
+Try playing around with different combinations of PCs by editing the code below:
 ```{r fig.width=7.5, fig.height=4.5} 
 ggplot(plot_oil, aes(x=PC1, y=PC2, color=region, shape=macro.area)) + geom_point() + coord_fixed() 
 ```
 
-## Plotting the PCA in 2D
-
-```{r fig.width=7.5, fig.height=4.5} 
-ggplot(plot_oil, aes(x=PC3, y=PC4, color=region, shape=macro.area)) + geom_point() + coord_fixed() 
-```
-
 ## Wrapping up
 
-PCA is one of the most widely used methods for dimensionality reduction.
+PCA is one of the most widely used methods for dimensionality reduction - but by not the only one!
 
 We have skipped over some very important concepts in the this very shorts
 introduction:
@@ -230,14 +228,14 @@ data("zebrafish")
 
 As explained earlier, we need to trim and normalize the data.
 
-Let's first discard genes with less than 5 reads in in three samples
+Let's first discard genes with less than 10 reads in in three samples
 
 ```{r} 
-above_threshold <- rowSums(zebrafish$Expression >= 5) >= 3
+above_threshold <- rowSums(zebrafish$Expression >= 10) >= 3
 EM_zebra <- subset(zebrafish$Expression, above_threshold)
 ```
 
-The threshold on which to trim is somewhat arbitrary and depends heavily on the given dataset. Often you would set the threshold for expression on what can be externally experimentally validated.
+The threshold on which to trim is somewhat arbitrary and depends heavily on the given dataset. Often you set the threshold for expression on what can be externally experimentally validated.
 
 ## Normalizing the data
 
@@ -286,101 +284,88 @@ ggplot(plot_zebra, aes(x=PC3, y=PC4, color=gallein)) + geom_point() + coord_fixe
 
 ## Interpreting the plot
 
+What does the plot mean?
+
+>- Is this what you expected to see?
+>- What could be the explanation?
+>- Experiments are not guaranteed to look like how you want them!
 
 ## Exercise 2: The `yeast` dataset
+
+- Dataset from the paper: _A global non-coding RNA system modulates fission yeast protein levels in response to stress._ by Leong _et al_. 
+- URL to paper: https://www.ncbi.nlm.nih.gov/pubmed/24559675
+- RNA-Seq data for __12__ fission samples. 
+- Contains wildtype (wt) and mutant (mut) strains, with a transcription factor mutated.
+- Contains samples at 0 and 30 minutes after stress stimulation.
+- The data contains raw counts for genes.
+
+## Exercise 2: The `pasilla` dataset
+
+- Dataset from the paper: _A global non-coding RNA system modulates fission yeast protein levels in response to stress._ by Leong _et al_. 
+- URL to paper: https://www.bioconductor.org/packages/release/data/experiment/html/pasilla.html
+- RNA-Seq data for __7__ fission samples. 
+- Contains treated and untreated (knock down) samples, prepared using two different protocols.
+- The data contains raw counts for genes.
+
+## Exercise 2: The `tissues` dataset
+
+- XXX
+
+## Exercise 1: The `oliveoil` dataset
+
+Repeat the previous analysis for the the `yeast`, `pasilla` and, if you have time, the `tissues` dataset.
+
+1. Load the data, and determine the dimensionality. 
+2. Perform the PCA 
+3. Inspect the amount of variance explained by each PC 
+4. Make a plot of the samples using `PC1` & `PC2` and `PC2` & `PC3` 
+5. Do you see any pattern? Discuss with the people near you.
+
+I highly suggest you try writing the code yourself! If you are struggling, you can look at the cheatsheets on the following slides.
+
+We will go around the room to answer questions.
+
+## Cheat sheet: Loading the data
 
 Perfrom the PCA:
 ```{r}
 # Load the data
 data("yeast")
-
-# Trim 
-EM_yeast <- subset(yeast$Expression, rowSums(yeast$Expression >= 5) >= 3)
-
-# Calculate normalization factors
-dge_yeast <- calcNormFactors(DGEList(EM_yeast), method="TMM")
-
-# Normalize the expression values
-logTMM_yeast <- cpm(dge_yeast, log=TRUE, prior.count=3)
-
-# PCA
-pca_yeast <- prcomp(t(logTMM_yeast))
-### <b>
-plot_yeast <- data.frame(pca_yeast$x, yeast$Design) 
-### </b>
-```
-
-### Plot
-
-```{r fig.width=7.5, fig.height=4.5} 
-ggplot(plot_yeast, aes(x=PC1, y=PC3, color=minute, shape=strain)) + geom_point() + coord_fixed() 
-```
-
-## Exercise 3: The `pasilla` dataset
-
-Perfrom the PCA:
-```{r}
-# Load the data
 data("pasilla")
+data("tissues")
 
-# Trim 
-EM_pasilla <- subset(pasilla$Expression, rowSums(pasilla$Expression >= 5) >= 3)
+# Inspect the dimensionality
+dim(yeast$Expression)
 
-# Calculate normalization factors
-dge_pasilla <- calcNormFactors(DGEList(EM_pasilla), method="TMM")
+# Inspect the design by
+yeast$Design
+
+```
+
+## Cheat sheet: Analysing the data
+
+```{r}
+# Set a dataset
+dataset <- tissues
+
+# Trim: Play around with numbers here 
+EM <- subset(dataset$Expression, rowSums(dataset$Expression >= 5) >= 3)
+
+# Calculate normalization factors: Play around with the method argument
+dge <- calcNormFactors(DGEList(EM), method="TMM")
 
 # Normalize the expression values
-logTMM_pasilla <- cpm(dge_pasilla, log=TRUE, prior.count=3)
+logTMM <- cpm(dge, log=TRUE, prior.count=5)
 
-# PCA
-pca_pasilla <- prcomp(t(logTMM_pasilla))
-plot_pasilla <- data.frame(pca_pasilla$x, pasilla$Design) 
+# Perform the PCA and save data for plotting
+pca <- prcomp(t(logTMM))
+plot_data <- data.frame(pca$x, dataset$Design) 
 ```
 
-### Plot
+## Cheatsheet plotting:
 
-```{r fig.width=7.5, fig.height=4.5} 
-ggplot(plot_pasilla, aes(x=PC1, y=PC2, color=condition, shape=type)) + geom_point() + coord_fixed() 
+Play around with different components and settings for color and shape
+
+```{r} 
+ggplot(plot_data, aes(x=PC1, y=PC2, color=cell.type, label=cell.type)) + geom_point() + coord_fixed() 
 ```
-
-## Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block
-above. These are required in order to instruct R how to build the vignette. Note
-that you should change the `title` field and the `\VignetteIndexEntry` to match
-the title of your vignette.
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme
-you can specify your own CSS in the document metadata as follows:
-
-output: rmarkdown::html_vignette: css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images
-side-by-side.
-
-```{r, fig.show='hold'} plot(1:10) plot(10:1) ```
-
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-output: rmarkdown::html_vignette: fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in
-**knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A
-footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'} knitr::kable(head(mtcars, 10)) ```
-
-## More Examples
-
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither." 
-([via](https://twitter.com/hadleywickham/status/504368538874703872))

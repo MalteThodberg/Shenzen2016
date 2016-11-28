@@ -81,4 +81,9 @@ tissues <- list(Design=pData(bot),
 										Annotation=fData(bot),
 										Expression=as.matrix(exprs(bot)))
 
+tissues$Design$tissue.type <- c(rep("Cell Line", 5),
+																rep("Pure Tissue", 13),
+																rep("Mixed Tissue", 2),
+																rep("Pure Tissue", 2))
+
 devtools::use_data(tissues, overwrite=TRUE)
