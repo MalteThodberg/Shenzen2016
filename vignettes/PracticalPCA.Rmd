@@ -120,19 +120,19 @@ head(plot_iris)
 
 ## Plotting the PCA in 2D
 
-```{r fig.width=7.5, fig.height=4.5} 
+```{r} 
 ggplot(plot_iris, aes(x=PC1, y=PC2, color=Species)) + geom_point()  + coord_fixed()
 ```
 
 ## Plotting the PCA in 2D
 
-```{r fig.width=7.5, fig.height=4.5} 
+```{r} 
 ggplot(plot_iris, aes(x=PC3, y=PC4, color=Species)) + geom_point() + coord_fixed()
 ```
 
 ## Base plotting of the same thing 
 
-```{r fig.width=7.5, fig.height=4.5} 
+```{r} 
 with(plot_iris, plot(x=PC1, y=PC2, col=Species)); grid() 
 ```
 
@@ -188,7 +188,7 @@ Go back in the slides: Which object can you call the `summary` function on to in
 ## Plotting the PCA in 2D
 
 Try playing around with different combinations of PCs by editing the code below:
-```{r fig.width=7.5, fig.height=4.5} 
+```{r} 
 ggplot(plot_oil, aes(x=PC1, y=PC2, color=region, shape=macro.area)) + geom_point() + coord_fixed() 
 ```
 
@@ -272,13 +272,13 @@ head(plot_oil)
 
 ## Plotting the PCA in 2D
 
-```{r fig.width=7.5, fig.height=4.5} 
+```{r} 
 ggplot(plot_zebra, aes(x=PC1, y=PC2, color=gallein)) + geom_point() + coord_fixed() 
 ```
 
 ## Plotting the PCA in 2D
 
-```{r fig.width=7.5, fig.height=4.5} 
+```{r} 
 ggplot(plot_zebra, aes(x=PC3, y=PC4, color=gallein)) + geom_point() + coord_fixed()
 ```
 
@@ -301,17 +301,21 @@ What does the plot mean?
 
 ## Exercise 2: The `pasilla` dataset
 
-- Dataset from the paper: _A global non-coding RNA system modulates fission yeast protein levels in response to stress._ by Leong _et al_. 
-- URL to paper: https://www.bioconductor.org/packages/release/data/experiment/html/pasilla.html
-- RNA-Seq data for __7__ fission samples. 
+- Dataset from the paper: _Conservation of an RNA regulatory map between Drosophila and mammals._ by Brooks _et al_. 
+- URL to paper: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3032923/
+- RNA-Seq data for __7__ drosophila samples. 
 - Contains treated and untreated (knock down) samples, prepared using two different protocols.
 - The data contains raw counts for genes.
 
 ## Exercise 2: The `tissues` dataset
 
-- XXX
+- Dataset from the paper: _Alternative isoform regulation in human tissue transcriptomes.._ by Wang _et al_. 
+- URL to paper: http://www.ncbi.nlm.nih.gov/pubmed?term=18978772
+- RNA-Seq data for __22__ human tissue samples. 
+- Samples sorted by cell type or tissue type.
+- The data contains raw counts for genes.
 
-## Exercise 1: The `oliveoil` dataset
+## Exercise 1: PCA using R
 
 Repeat the previous analysis for the the `yeast`, `pasilla` and, if you have time, the `tissues` dataset.
 
@@ -325,7 +329,7 @@ I highly suggest you try writing the code yourself! If you are struggling, you c
 
 We will go around the room to answer questions.
 
-## Cheat sheet: Loading the data
+## Cheatsheet: Loading the data
 
 Perfrom the PCA:
 ```{r}
@@ -339,22 +343,21 @@ dim(yeast$Expression)
 
 # Inspect the design by
 yeast$Design
-
 ```
 
-## Cheat sheet: Analysing the data
+## Cheatsheet: Analysing the data
 
 ```{r}
-# Set a dataset
-dataset <- tissues
+# Set a dataset: either yeast, pasilla or tissues
+dataset <- pasilla
 
 # Trim: Play around with numbers here 
 EM <- subset(dataset$Expression, rowSums(dataset$Expression >= 5) >= 3)
 
-# Calculate normalization factors: Play around with the method argument
+# Calculate normalization factors: Play around with the method argument (RLE, "none")
 dge <- calcNormFactors(DGEList(EM), method="TMM")
 
-# Normalize the expression values
+# Normalize the expression values (Advanced, play around with prior.count)
 logTMM <- cpm(dge, log=TRUE, prior.count=5)
 
 # Perform the PCA and save data for plotting
@@ -362,10 +365,10 @@ pca <- prcomp(t(logTMM))
 plot_data <- data.frame(pca$x, dataset$Design) 
 ```
 
-## Cheatsheet plotting:
+## Cheatsheet: plotting
 
 Play around with different components and settings for color and shape
 
 ```{r} 
-ggplot(plot_data, aes(x=PC1, y=PC2, color=cell.type, label=cell.type)) + geom_point() + coord_fixed() 
+ggplot(plot_data, aes(x=PC1, y=PC2, color=condition, shape=type)) + geom_point() + coord_fixed() 
 ```

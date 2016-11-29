@@ -249,7 +249,7 @@ If you have time:
 
 Once again - the next couple of slides contain cheat sheets.
 
-## Cheat sheet: Experimenting with model matrices
+## Cheatsheet: Experimenting with model matrices
 
 ```{r}
 # Load the data
@@ -266,11 +266,11 @@ mod <- model.matrix(~condition, data=dataset$Design)
 dataset$Design
 ```
 
-## Cheat sheet: Fitting the models
+## Cheatsheet: Fitting the models
 
 ```{r}
 # Trim 
-EM <- subset(dataset$Expression, rowSums(dataset$Expression >= 10) >= 3)
+EM <- subset(dataset$Expression, rowSums(dataset$Expression >= 5) >= 3)
 
 # Calculate normalization factors
 dge <- calcNormFactors(DGEList(EM), method="TMM")
@@ -285,7 +285,7 @@ fit <- glmFit(disp, design=mod)
 res <- glmLRT(fit, coef="conditionuntreated")
 ```
 
-## Cheat sheet: Inspecting the results
+## Cheatsheet: Inspecting the results
 
 ```{r, eval=FALSE, include=TRUE}
 # Dispersion
