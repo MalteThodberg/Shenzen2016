@@ -91,7 +91,7 @@ dataset$Design
 
 ## ------------------------------------------------------------------------
 # Trim 
-EM <- subset(dataset$Expression, rowSums(dataset$Expression >= 10) >= 3)
+EM <- subset(dataset$Expression, rowSums(dataset$Expression >= 5) >= 3)
 
 # Calculate normalization factors
 dge <- calcNormFactors(DGEList(EM), method="TMM")

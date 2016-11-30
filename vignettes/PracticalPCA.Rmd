@@ -267,7 +267,7 @@ summary(pca_zebra)
 
 ```{r} 
 plot_zebra <- data.frame(pca_zebra$x, zebrafish$Design) 
-head(plot_oil) 
+head(plot_zebra) 
 ```
 
 ## Plotting the PCA in 2D
@@ -315,7 +315,7 @@ What does the plot mean?
 - Samples sorted by cell type or tissue type.
 - The data contains raw counts for genes.
 
-## Exercise 1: PCA using R
+## Exercise 2: PCA using R
 
 Repeat the previous analysis for the the `yeast`, `pasilla` and, if you have time, the `tissues` dataset.
 

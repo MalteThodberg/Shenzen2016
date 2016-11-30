@@ -25,13 +25,13 @@ summary(pca_iris)
 plot_iris <- data.frame(pca_iris$x, Species=iris$Species) 
 head(plot_iris)
 
-## ----fig.width=7.5, fig.height=4.5---------------------------------------
+## ------------------------------------------------------------------------
 ggplot(plot_iris, aes(x=PC1, y=PC2, color=Species)) + geom_point()  + coord_fixed()
 
-## ----fig.width=7.5, fig.height=4.5---------------------------------------
+## ------------------------------------------------------------------------
 ggplot(plot_iris, aes(x=PC3, y=PC4, color=Species)) + geom_point() + coord_fixed()
 
-## ----fig.width=7.5, fig.height=4.5---------------------------------------
+## ------------------------------------------------------------------------
 with(plot_iris, plot(x=PC1, y=PC2, col=Species)); grid() 
 
 ## ------------------------------------------------------------------------
@@ -56,7 +56,7 @@ pca_oil <- prcomp(oliveoil[,-c(1,2)])
 # Save the data for plotting
 plot_oil <- data.frame(pca_oil$x, oliveoil[,1:2]) 
 
-## ----fig.width=7.5, fig.height=4.5---------------------------------------
+## ------------------------------------------------------------------------
 ggplot(plot_oil, aes(x=PC1, y=PC2, color=region, shape=macro.area)) + geom_point() + coord_fixed() 
 
 ## ------------------------------------------------------------------------
@@ -85,12 +85,12 @@ summary(pca_zebra)
 
 ## ------------------------------------------------------------------------
 plot_zebra <- data.frame(pca_zebra$x, zebrafish$Design) 
-head(plot_oil) 
+head(plot_zebra) 
 
-## ----fig.width=7.5, fig.height=4.5---------------------------------------
+## ------------------------------------------------------------------------
 ggplot(plot_zebra, aes(x=PC1, y=PC2, color=gallein)) + geom_point() + coord_fixed() 
 
-## ----fig.width=7.5, fig.height=4.5---------------------------------------
+## ------------------------------------------------------------------------
 ggplot(plot_zebra, aes(x=PC3, y=PC4, color=gallein)) + geom_point() + coord_fixed()
 
 ## ------------------------------------------------------------------------
@@ -105,18 +105,17 @@ dim(yeast$Expression)
 # Inspect the design by
 yeast$Design
 
-
 ## ------------------------------------------------------------------------
-# Set a dataset
-dataset <- tissues
+# Set a dataset: either yeast, pasilla or tissues
+dataset <- pasilla
 
 # Trim: Play around with numbers here 
 EM <- subset(dataset$Expression, rowSums(dataset$Expression >= 5) >= 3)
 
-# Calculate normalization factors: Play around with the method argument
+# Calculate normalization factors: Play around with the method argument (RLE, "none")
 dge <- calcNormFactors(DGEList(EM), method="TMM")
 
-# Normalize the expression values
+# Normalize the expression values (Advanced, play around with prior.count)
 logTMM <- cpm(dge, log=TRUE, prior.count=5)
 
 # Perform the PCA and save data for plotting
@@ -124,5 +123,5 @@ pca <- prcomp(t(logTMM))
 plot_data <- data.frame(pca$x, dataset$Design) 
 
 ## ------------------------------------------------------------------------
-ggplot(plot_data, aes(x=PC1, y=PC2, color=cell.type, label=cell.type)) + geom_point() + coord_fixed() 
+ggplot(plot_data, aes(x=PC1, y=PC2, color=condition, shape=type)) + geom_point() + coord_fixed() 
 

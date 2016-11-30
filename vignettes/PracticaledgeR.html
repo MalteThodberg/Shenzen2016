@@ -10,7 +10,7 @@
 
 
 
-  <meta name="date" content="2016-11-28" />
+  <meta name="date" content="2016-11-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -94,7 +94,7 @@
       <h1 data-config-title><!-- populated from slide_config.json --></h1>
       <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
       <p data-config-presenter><!-- populated from slide_config.json --></p>
-            <p style="margin-top: 6px; margin-left: -2px;">2016-11-28</p>
+            <p style="margin-top: 6px; margin-left: -2px;">2016-11-30</p>
           </hgroup>
   </slide>
 
@@ -447,7 +447,7 @@ summary(decideTestsDGE(galleinQL, p.value=0.1))</pre>
 
 <p>Once again - the next couple of slides contain cheat sheets.</p>
 
-</article></slide><slide class=''><hgroup><h2>Cheat sheet: Experimenting with model matrices</h2></hgroup><article  id="cheat-sheet-experimenting-with-model-matrices" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Cheatsheet: Experimenting with model matrices</h2></hgroup><article  id="cheatsheet-experimenting-with-model-matrices" class="smaller ">
 
 <pre class = 'prettyprint lang-r'># Load the data
 data(&quot;yeast&quot;)
@@ -471,10 +471,10 @@ dataset$Design</pre>
 ## untreated3fb untreated  paired-end
 ## untreated4fb untreated  paired-end</pre>
 
-</article></slide><slide class=''><hgroup><h2>Cheat sheet: Fitting the models</h2></hgroup><article  id="cheat-sheet-fitting-the-models" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Cheatsheet: Fitting the models</h2></hgroup><article  id="cheatsheet-fitting-the-models" class="smaller ">
 
 <pre class = 'prettyprint lang-r'># Trim 
-EM &lt;- subset(dataset$Expression, rowSums(dataset$Expression &gt;= 10) &gt;= 3)
+EM &lt;- subset(dataset$Expression, rowSums(dataset$Expression &gt;= 5) &gt;= 3)
 
 # Calculate normalization factors
 dge &lt;- calcNormFactors(DGEList(EM), method=&quot;TMM&quot;)
@@ -488,7 +488,7 @@ fit &lt;- glmFit(disp, design=mod)
 # Perform the test of the given coefficient
 res &lt;- glmLRT(fit, coef=&quot;conditionuntreated&quot;)</pre>
 
-</article></slide><slide class=''><hgroup><h2>Cheat sheet: Inspecting the results</h2></hgroup><article  id="cheat-sheet-inspecting-the-results" class="smaller ">
+</article></slide><slide class=''><hgroup><h2>Cheatsheet: Inspecting the results</h2></hgroup><article  id="cheatsheet-inspecting-the-results" class="smaller ">
 
 <pre class = 'prettyprint lang-r'># Dispersion
 plotBCV(disp)
